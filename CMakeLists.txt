@@ -8,47 +8,46 @@ include(ExternalProject)
 
 # 确保所有目标都使用动态链接的运行时库（消除兼容性问题）
 if(MSVC)
-    set(CMAKE_C_FLAGS_RELEASE "/MD")
-    set(CMAKE_C_FLAGS_DEBUG "/MDd")
-    set(CMAKE_CXX_FLAGS_RELEASE "/MD")
-    set(CMAKE_CXX_FLAGS_DEBUG "/MDd")
-    add_compile_options("/utf-8") # 支持中文
+    set(CMAKE_C_FLAGS_RELEASE "/MD")
+    set(CMAKE_C_FLAGS_DEBUG "/MDd")
+    set(CMAKE_CXX_FLAGS_RELEASE "/MD")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MDd")
+    add_compile_options("/utf-8") # 支持中文
 endif()
 
-# ==================== 1. FLTK 自动构建（新增 ExternalProject）====================
-# 注意：我们使用 fltk-1.4.x 的 Git 仓库
+# ==================== 1. FLTK 自动构建 ====================
 ExternalProject_Add(
-    fltk_AutoBuild # <-- 新增 FLTK 外部项目名称
-    
-    EXCLUDE_FROM_ALL ON
-    GIT_REPOSITORY https://github.com/fltk/fltk.git
-    GIT_TAG release-1.3.5 # <-- 确保使用你需要的版本标签
-    GIT_SHALLOW TRUE
+    fltk_AutoBuild 
+    
+    EXCLUDE_FROM_ALL ON
+    GIT_REPOSITORY https://github.com/fltk/fltk.git
+    GIT_TAG release-1.3.5
+    GIT_SHALLOW TRUE
 
-    PREFIX ${CMAKE_BINARY_DIR}/External/FLTK
-    BINARY_DIR ${CMAKE_BINARY_DIR}/External/FLTK/build
-    INSTALL_DIR ${CMAKE_BINARY_DIR}/External/FLTK/Install
+    PREFIX ${CMAKE_BINARY_DIR}/External/FLTK
+    BINARY_DIR ${CMAKE_BINARY_DIR}/External/FLTK/build
+    INSTALL_DIR ${CMAKE_BINARY_DIR}/External/FLTK/Install
 
-    # 关键：指定 FLTK 编译的生成器和架构，匹配 Runner 环境
-    CMAKE_GENERATOR "Visual Studio 17 2022"
-    CMAKE_GENERATOR_PLATFORM x64
-    CMAKE_GENERATOR_TOOLSET "v143"
+    # 关键：指定 FLTK 编译的生成器和架构，匹配 Runner 环境
+    CMAKE_GENERATOR "Visual Studio 17 2022"
+    CMAKE_GENERATOR_PLATFORM x64
+    CMAKE_GENERATOR_TOOLSET "v143"
 
-    # FLTK 编译选项
-    CMAKE_ARGS
-        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DOPTION_BUILD_EXAMPLES=OFF
-        -DOPTION_BUILD_TEST=OFF
+    # FLTK 编译选项
+    CMAKE_ARGS
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DOPTION_BUILD_EXAMPLES=OFF
+        -DOPTION_BUILD_TEST=OFF
 		-DFLTK_BUILD_HTML_DOCS=OFF
-        -DFLTK_USE_SYSTEM_LIBPNG=OFF # 确保使用其内置的 PNG 库
-        -DFLTK_USE_SYSTEM_LIBJPEG=OFF # 确保使用其内置的 JPEG 库
-        -DOPTION_USE_THREADS=ON # 启用多线程支持
-        # 统一运行时库
-        -DCMAKE_C_FLAGS_RELEASE="/MD"
-        -DCMAKE_C_FLAGS_DEBUG="/MDd"
-        -DCMAKE_CXX_FLAGS_RELEASE="/MD"
-        -DCMAKE_CXX_FLAGS_DEBUG="/MDd"
+        -DFLTK_USE_SYSTEM_LIBPNG=OFF
+        -DFLTK_USE_SYSTEM_LIBJPEG=OFF
+        -DOPTION_USE_THREADS=ON
+        # 统一运行时库
+        -DCMAKE_C_FLAGS_RELEASE="/MD"
+        -DCMAKE_C_FLAGS_DEBUG="/MDd"
+        -DCMAKE_CXX_FLAGS_RELEASE="/MD"
+        -DCMAKE_CXX_FLAGS_DEBUG="/MDd"
 		
 )
 
@@ -57,119 +56,112 @@ set(FLTK_INSTALL_DIR ${CMAKE_BINARY_DIR}/External/FLTK/Install)
 set(FLTK_INCLUDE_DIR ${FLTK_INSTALL_DIR}/include)
 set(FLTK_LIB_DIR ${FLTK_INSTALL_DIR}/lib)
 
-# 区分 Debug/Release 库名 <-- 移除/注释掉这部分
-# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-#     set(FLTK_CORE_LIB_NAME "fltkd")
-# else()
-#     set(FLTK_CORE_LIB_NAME "fltk")
-# endif()
-set(FLTK_CORE_LIB_NAME "fltk") # <-- 统一使用 fltk
+# 移除手动设置后缀的代码。
 
-
-# ==================== 2. OpenCV 自动构建（调整参数）====================
+# ==================== 2. OpenCV 自动构建 ====================
 ExternalProject_Add(
-    fltk_cv_AutoBuild
-    
-    EXCLUDE_FROM_ALL ON
-    GIT_REPOSITORY https://github.com/opencv/opencv.git
-    GIT_TAG 4.12.0
-    GIT_SHALLOW TRUE
-    
-    PREFIX ${CMAKE_BINARY_DIR}/External/OpenCV
-    BINARY_DIR ${CMAKE_BINARY_DIR}/External/OpenCV/build
-    INSTALL_DIR ${CMAKE_BINARY_DIR}/External/OpenCV/Install
-    
-    # 关键：VS 2022 配置
-    CMAKE_GENERATOR "Visual Studio 17 2022"
-    CMAKE_GENERATOR_PLATFORM x64
-    CMAKE_GENERATOR_TOOLSET "v143"
-    
-    # OpenCV 编译选项（只保留必需模块，禁用所有可能冲突的选项）
-    CMAKE_ARGS
-        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-        
-        # 核心：禁用所有复杂的特性，以确保配置阶段通过
-        -DWITH_CUDA=OFF              # <-- 禁用 CUDA
-        -DWITH_FFMPEG=OFF            # <-- 禁用 FFMPEG (避免下载冲突)
-        -DBUILD_opencv_freetype=OFF  # <-- 禁用 FREETYPE/中文支持 (避免 Contrib 冲突)
-        -DBUILD_opencv_text=OFF      # <-- 禁用 TEXT
-        -DWITH_IPP=OFF               # 禁用 IPP
-        -DWITH_OPENCL=OFF            # 禁用 OpenCL
-        -DWITH_LAPACK=OFF            # 禁用 LAPACK
-        -DBUILD_SHARED_LIBS=ON       # 编译动态库
-        # 核心修正：禁用 calib3d 和 ml
-        -DBUILD_opencv_calib3d=OFF
-        -DBUILD_opencv_ml=OFF
-        # 禁用所有 JPEG 相关的组件以绕过 libjpeg-turbo 内部错误
-        -DBUILD_JPEG=OFF        # <--- 新增：禁用 JPEG 库的内置构建
-        -DWITH_JPEG=OFF         # <--- 新增：禁用 JPEG 支持
-        -DOPENCV_ENABLE_NASM=OFF
-        -DENABLE_SSE=OFF        # 保持此项，它在配置摘要中显示已禁用
-        # 最终修正：禁用 DNN 模块（排除 Protobuf/Flatbuffers 等复杂依赖链）
-        -DBUILD_opencv_dnn=OFF # <--- 强烈建议新增！
-        -DBUILD_opencv_core=ON       # 核心
-        -DBUILD_opencv_imgproc=ON    # 图像处理
-        -DBUILD_opencv_videoio=ON    # 视频/摄像头
-        -DBUILD_opencv_imgcodecs=ON  # 图像编解码
-        
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_STANDARD=17
-        -DBUILD_EXAMPLES=OFF
-        -DBUILD_TESTS=OFF
-		# 禁用 Python 模块，消除 numpy 依赖报错
-        -DBUILD_opencv_python_bindings=OFF
-        -DBUILD_opencv_python_tests=OFF
-		# 强制禁用 NASM（保持不变，以防万一）
-        -DOPENCV_ENABLE_NASM=OFF
-        
-        # 核心修正：禁用 JPEG 的 SIMD 优化，解决 libjpeg-turbo 的 CMake 脚本错误
-        -DENABLE_SSE=OFF # <--- 新增，禁用 SIMD 优化，解决 libjpeg-turbo 错误
-        -DBUILD_JAVA=OFF
-        # 统一运行时库
-        -DCMAKE_C_FLAGS_RELEASE="/MD"
-        -DCMAKE_C_FLAGS_DEBUG="/MDd"
-        -DCMAKE_CXX_FLAGS_RELEASE="/MD"
-        -DCMAKE_CXX_FLAGS_DEBUG="/MDd"
-
+    fltk_cv_AutoBuild
+    
+    EXCLUDE_FROM_ALL ON
+    GIT_REPOSITORY https://github.com/opencv/opencv.git
+    GIT_TAG 4.12.0
+    GIT_SHALLOW TRUE
+    
+    PREFIX ${CMAKE_BINARY_DIR}/External/OpenCV
+    BINARY_DIR ${CMAKE_BINARY_DIR}/External/OpenCV/build
+    INSTALL_DIR ${CMAKE_BINARY_DIR}/External/OpenCV/Install
+    
+    # 关键：VS 2022 配置
+    CMAKE_GENERATOR "Visual Studio 17 2022"
+    CMAKE_GENERATOR_PLATFORM x64
+    CMAKE_GENERATOR_TOOLSET "v143"
+    
+    # OpenCV 编译选项（保持不变，它工作正常）
+    CMAKE_ARGS
+        -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+        -DWITH_CUDA=OFF
+        -DWITH_FFMPEG=OFF
+        -DBUILD_opencv_freetype=OFF
+        -DBUILD_opencv_text=OFF
+        -DWITH_IPP=OFF
+        -DWITH_OPENCL=OFF
+        -DWITH_LAPACK=OFF
+        -DBUILD_SHARED_LIBS=ON
+        -DBUILD_opencv_calib3d=OFF
+        -DBUILD_opencv_ml=OFF
+        -DBUILD_JPEG=OFF
+        -DWITH_JPEG=OFF
+        -DOPENCV_ENABLE_NASM=OFF
+        -DENABLE_SSE=OFF
+        -DBUILD_opencv_dnn=OFF
+        -DBUILD_opencv_core=ON
+        -DBUILD_opencv_imgproc=ON
+        -DBUILD_opencv_videoio=ON
+        -DBUILD_opencv_imgcodecs=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_CXX_STANDARD=17
+        -DBUILD_EXAMPLES=OFF
+        -DBUILD_TESTS=OFF
+        -DBUILD_opencv_python_bindings=OFF
+        -DBUILD_opencv_python_tests=OFF
+        -DOPENCV_ENABLE_NASM=OFF
+        -DENABLE_SSE=OFF
+        -DBUILD_JAVA=OFF
+        -DCMAKE_C_FLAGS_RELEASE="/MD"
+        -DCMAKE_C_FLAGS_DEBUG="/MDd"
+        -DCMAKE_CXX_FLAGS_RELEASE="/MD"
+        -DCMAKE_CXX_FLAGS_DEBUG="/MDd"
 )
 
 # 配置 OpenCV 路径
 set(OPENCV_INSTALL_DIR ${CMAKE_BINARY_DIR}/External/OpenCV/Install)
 set(OPENCV_INCLUDE_DIR ${OPENCV_INSTALL_DIR}/include)
-set(OPENCV_LIB_DIR ${OPENCV_INSTALL_DIR}/x64/vc17/lib)
+# 修正路径：使用生成器表达式来处理 vc17 目录和 Debug/Release 库名
 
-# 区分 Debug/Release 库名（保持你原来的逻辑）
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(OPENCV_LIB_SUFFIX "d")
-else()
-    set(OPENCV_LIB_SUFFIX "")
-endif()
+# <<< 关键修改开始 >>>
+# 定义一个宏，用于构造 Windows 平台下带后缀的库名
+# $<CONFIG:Debug> 返回 Debug 配置名，否则为空
+# $<IF> 用于判断是否是 Debug 配置，如果是则添加 'd' 后缀
 
-set(OPENCV_LIBS
-    ${OPENCV_LIB_DIR}/opencv_core4120${OPENCV_LIB_SUFFIX}.lib
-    ${OPENCV_LIB_DIR}/opencv_imgproc4120${OPENCV_LIB_SUFFIX}.lib
-    ${OPENCV_LIB_DIR}/opencv_videoio4120${OPENCV_LIB_SUFFIX}.lib
-    ${OPENCV_LIB_DIR}/opencv_imgcodecs4120${OPENCV_LIB_SUFFIX}.lib
+# 构造动态的库目录（基于 Visual Studio 版本）
+set(OPENCV_LIB_DIR "${OPENCV_INSTALL_DIR}/x64/$<IF:$<STREQUAL:${CMAKE_GENERATOR_TOOLSET},v143>,vc17,vc16>/lib")
+# 简单粗暴点，直接使用 vc17 目录，因为你已经用 VS 2022 编译了：
+set(OPENCV_LIB_DIR_VC17 "${OPENCV_INSTALL_DIR}/x64/vc17/lib")
+
+
+# 构造 FLTK 库名：fltk.lib 或 fltkd.lib
+set(FLTK_LIBS
+    "${FLTK_LIB_DIR}/fltk$<IF:$<CONFIG:Debug>,d,.>.lib"
+    "${FLTK_LIB_DIR}/fltk_images$<IF:$<CONFIG:Debug>,d,.>.lib"
 )
+
+# 构造 OpenCV 库名：opencv_core4120.lib 或 opencv_core4120d.lib
+set(OPENCV_LIBS
+    "${OPENCV_LIB_DIR_VC17}/opencv_core4120$<IF:$<CONFIG:Debug>,d,.>.lib"
+    "${OPENCV_LIB_DIR_VC17}/opencv_imgproc4120$<IF:$<CONFIG:Debug>,d,.>.lib"
+    "${OPENCV_LIB_DIR_VC17}/opencv_videoio4120$<IF:$<CONFIG:Debug>,d,.>.lib"
+    "${OPENCV_LIB_DIR_VC17}/opencv_imgcodecs4120$<IF:$<CONFIG:Debug>,d,.>.lib"
+)
+# <<< 关键修改结束 >>>
+
 
 # ==================== 3. 主项目编译与链接 ====================
 include_directories(${FLTK_INCLUDE_DIR} ${OPENCV_INCLUDE_DIR})
-link_directories(${FLTK_LIB_DIR}) # FLTK 库的路径
-link_directories(${OPENCV_LIB_DIR}) # OpenCV 库的路径
+# 移除 link_directories，因为我们使用的是完整的库路径，无需 link_directories
 
 
 add_executable(fltk_chinese_test main.cpp)
 
 # 确保 FLTK 和 OpenCV 都编译安装完成后，再编译主项目
-add_dependencies(fltk_chinese_test fltk_AutoBuild fltk_cv_AutoBuild) # <-- 新增 FLTK 依赖
+add_dependencies(fltk_chinese_test fltk_AutoBuild fltk_cv_AutoBuild)
 
 # 链接所有库
 target_link_libraries(fltk_chinese_test
-    ${FLTK_CORE_LIB_NAME} # FLTK 核心库
-	fltk_images
-    ${OPENCV_LIBS}
-    gdiplus
-    ws2_32
-    user32
-    comctl32
+    PRIVATE
+        ${FLTK_LIBS} # FLTK 核心库和图像库
+        ${OPENCV_LIBS} # OpenCV 核心功能库
+        gdiplus
+        ws2_32
+        user32
+        comctl32
 )
