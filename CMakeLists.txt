@@ -100,7 +100,11 @@ ExternalProject_Add(
         # 核心修正：禁用 calib3d 和 ml
         -DBUILD_opencv_calib3d=OFF
         -DBUILD_opencv_ml=OFF
-        
+        # 禁用所有 JPEG 相关的组件以绕过 libjpeg-turbo 内部错误
+        -DBUILD_JPEG=OFF        # <--- 新增：禁用 JPEG 库的内置构建
+        -DWITH_JPEG=OFF         # <--- 新增：禁用 JPEG 支持
+        -DOPENCV_ENABLE_NASM=OFF
+        -DENABLE_SSE=OFF        # 保持此项，它在配置摘要中显示已禁用
         # 最终修正：禁用 DNN 模块（排除 Protobuf/Flatbuffers 等复杂依赖链）
         -DBUILD_opencv_dnn=OFF # <--- 强烈建议新增！
         -DBUILD_opencv_core=ON       # 核心
