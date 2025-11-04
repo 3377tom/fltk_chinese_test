@@ -168,7 +168,7 @@ add_dependencies(fltk_chinese_test fltk_AutoBuild fltk_cv_AutoBuild) # <-- 新�
 
 # 链接所有库
 target_link_libraries(fltk_chinese_test
-    ${FLTK_CORE_LIB_NAME} # FLTK 核心库
+    ${FLTK_LIBS}# FLTK 核心库
 	fltk_images
     ${OPENCV_LIBS}
     gdiplus
