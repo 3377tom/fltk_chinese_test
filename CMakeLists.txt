@@ -40,12 +40,14 @@ ExternalProject_Add(
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DOPTION_BUILD_EXAMPLES=OFF
         -DOPTION_BUILD_TEST=OFF
+		-DBUILD_opencv_calib3d=OFF
         -DOPTION_USE_THREADS=ON # 启用多线程支持
         # 统一运行时库
         -DCMAKE_C_FLAGS_RELEASE="/MD"
         -DCMAKE_C_FLAGS_DEBUG="/MDd"
         -DCMAKE_CXX_FLAGS_RELEASE="/MD"
         -DCMAKE_CXX_FLAGS_DEBUG="/MDd"
+		
 )
 
 # 配置 FLTK 路径
