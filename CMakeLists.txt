@@ -40,7 +40,7 @@ ExternalProject_Add(
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DOPTION_BUILD_EXAMPLES=OFF
         -DOPTION_BUILD_TEST=OFF
-		-DBUILD_opencv_calib3d=OFF
+		
         -DOPTION_USE_THREADS=ON # 启用多线程支持
         # 统一运行时库
         -DCMAKE_C_FLAGS_RELEASE="/MD"
@@ -94,7 +94,7 @@ ExternalProject_Add(
         -DWITH_OPENCL=OFF            # 禁用 OpenCL
         -DWITH_LAPACK=OFF            # 禁用 LAPACK
         -DBUILD_SHARED_LIBS=ON       # 编译动态库
-        
+        -DBUILD_opencv_calib3d=OFF
         -DBUILD_opencv_core=ON       # 核心
         -DBUILD_opencv_imgproc=ON    # 图像处理
         -DBUILD_opencv_videoio=ON    # 视频/摄像头
