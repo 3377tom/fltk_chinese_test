@@ -58,10 +58,18 @@ set(FLTK_INCLUDE_DIR ${FLTK_INSTALL_DIR}/include)
 set(FLTK_LIB_DIR ${FLTK_INSTALL_DIR}/lib)
 
 # 区分 Debug/Release 库名 <-- 移除/注释掉这部分
-
- set(FLTK_LIBS
+set(FLTK_LIBS
+    # 核心库，包含 Fl::run, Fl::add_timeout 等
     "${FLTK_LIB_DIR}/fltk$<IF:$<CONFIG:Debug>,d,>.lib"
+    # 图像库，包含 Fl_RGB_Image
     "${FLTK_LIB_DIR}/fltk_images$<IF:$<CONFIG:Debug>,d,>.lib"
+    # FLTK Forms 库，包含 fl_alert, fl_message 等函数
+    "${FLTK_LIB_DIR}/fltk_forms$<IF:$<CONFIG:Debug>,d,>.lib"
+
+    # 显式链接 FLTK 依赖的外部库（即使 fltk_images 内部应该处理，最好手动加上）
+    "${FLTK_LIB_DIR}/fltk_z$<IF:$<CONFIG:Debug>,d,>.lib"
+    "${FLTK_LIB_DIR}/fltk_jpeg$<IF:$<CONFIG:Debug>,d,>.lib"
+    "${FLTK_LIB_DIR}/fltk_png$<IF:$<CONFIG:Debug>,d,>.lib"
 )
 
 
