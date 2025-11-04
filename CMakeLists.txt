@@ -94,9 +94,12 @@ ExternalProject_Add(
         -DWITH_OPENCL=OFF            # 禁用 OpenCL
         -DWITH_LAPACK=OFF            # 禁用 LAPACK
         -DBUILD_SHARED_LIBS=ON       # 编译动态库
+        # 核心修正：禁用 calib3d 和 ml
         -DBUILD_opencv_calib3d=OFF
-		# 新增修正：禁用 Machine Learning 模块（避免 BLAS/LAPACK 潜在冲突）
-        -DBUILD_opencv_ml=OFF # <--- 强烈建议新增！
+        -DBUILD_opencv_ml=OFF
+        
+        # 最终修正：禁用 DNN 模块（排除 Protobuf/Flatbuffers 等复杂依赖链）
+        -DBUILD_opencv_dnn=OFF # <--- 强烈建议新增！
         -DBUILD_opencv_core=ON       # 核心
         -DBUILD_opencv_imgproc=ON    # 图像处理
         -DBUILD_opencv_videoio=ON    # 视频/摄像头
