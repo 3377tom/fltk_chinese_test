@@ -1,0 +1,56 @@
+name: 🚀 OpenCV + FLTK (Win/CUDA/Chinese) 自动构建
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # 允许在 GitHub 页面手动触发
+
+jobs:
+  build_windows:
+    # 必须使用 Windows Runner，且需要 Visual Studio 2019 工具链
+    runs-on: windows-latest 
+
+    steps:
+      - name: ⬇️ 检出代码
+        uses: actions/checkout@v4
+
+      - name: ⚙️ 添加 MSBuild 到 PATH (用于 CMake/VS构建)
+        uses: microsoft/setup-msbuild@v2
+
+     # 关键步骤 1：安装 CUDA Toolkit (修正语法)
+      - name: ➕ 安装 CUDA Toolkit 11.2
+        uses: nvlabs/setup-cuda@v1
+        with:
+          cuda: '11.2'
+      
+      # 创建一个临时的构建目录 (后续步骤不变)
+      - name: 📁 配置 CMake
+        run: cmake --build build --config Release
+        shell: powershell
+
+      # 关键步骤 3：上传最终的构建产物
+      - name: 📦 上传 Release 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: fltk-opencv-release
+          path: |
+            build/fltk_chinese_test.exe
+            # 路径根据你的配置，指向 OpenCV 安装目录下的 bin 文件夹
+            build/External/OpenCV/Install/x64/vc16/bin/*.dll
+            
+      # 可选：如果你也需要 Debug 版本
+      - name: 🔨 编译项目 (Debug)
+        run: cmake --build build --config Debug
+        shell: powershell
+
+      - name: 📦 上传 Debug 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: fltk-opencv-debug
+          path: |
+            build/fltk_chinese_testd.exe
+            build/External/OpenCV/Install/x64/vc16/bin/*d.dll
