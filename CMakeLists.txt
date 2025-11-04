@@ -22,7 +22,7 @@ ExternalProject_Add(
     
     EXCLUDE_FROM_ALL ON
     GIT_REPOSITORY https://github.com/fltk/fltk.git
-    GIT_TAG v1.4.4 # <-- 确保使用你需要的版本标签
+    GIT_TAG v1.3.8 # <-- 确保使用你需要的版本标签
     GIT_SHALLOW TRUE
 
     PREFIX ${CMAKE_BINARY_DIR}/External/FLTK
@@ -55,12 +55,13 @@ set(FLTK_INSTALL_DIR ${CMAKE_BINARY_DIR}/External/FLTK/Install)
 set(FLTK_INCLUDE_DIR ${FLTK_INSTALL_DIR}/include)
 set(FLTK_LIB_DIR ${FLTK_INSTALL_DIR}/lib)
 
-# 区分 Debug/Release 库名
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(FLTK_CORE_LIB_NAME "fltkd")
-else()
-    set(FLTK_CORE_LIB_NAME "fltk")
-endif()
+# 区分 Debug/Release 库名 <-- 移除/注释掉这部分
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#     set(FLTK_CORE_LIB_NAME "fltkd")
+# else()
+#     set(FLTK_CORE_LIB_NAME "fltk")
+# endif()
+set(FLTK_CORE_LIB_NAME "fltk") # <-- 统一使用 fltk
 
 
 # ==================== 2. OpenCV 自动构建（调整参数）====================
@@ -151,6 +152,7 @@ add_dependencies(fltk_chinese_test fltk_AutoBuild fltk_cv_AutoBuild) # <-- 新�
 # 链接所有库
 target_link_libraries(fltk_chinese_test
     ${FLTK_CORE_LIB_NAME} # FLTK 核心库
+	fltk_images
     ${OPENCV_LIBS}
     gdiplus
     ws2_32
