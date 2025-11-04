@@ -37,9 +37,10 @@ ExternalProject_Add(
     INSTALL_DIR ${CMAKE_BINARY_DIR}/External/OpenCV/Install
     
     # 关键：显式指定 OpenCV 编译的生成器和架构，不依赖主项目传递
-    CMAKE_GENERATOR "Visual Studio 16 2019"
-    CMAKE_GENERATOR_PLATFORM x64  # 独立指定 64 位架构，不与主项目冲突
-    CMAKE_GENERATOR_TOOLSET "v142"  # VS 2019 工具集，明确指定
+    # 将 VS 16 2019 替换为 VS 17 2022
+    CMAKE_GENERATOR "Visual Studio 17 2022" 
+    CMAKE_GENERATOR_PLATFORM x64 
+    CMAKE_GENERATOR_TOOLSET "v143"  # VS 2022 工具集是 v143
     
     # OpenCV 编译选项（只保留必需模块，加速编译）
     CMAKE_ARGS
