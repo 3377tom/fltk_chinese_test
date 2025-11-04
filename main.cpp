@@ -109,8 +109,6 @@ void update_frame(void* data) {
         return;
     }
 
-    cv::cuda::GpuMat gpu_frame, gpu_rgb;
-    bool use_gpu = (cv::cuda::getCudaEnabledDeviceCount() > 0);
 
    
         // 如果没有GPU，则使用CPU处理
