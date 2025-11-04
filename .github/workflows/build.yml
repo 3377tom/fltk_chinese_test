@@ -22,8 +22,8 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
      # 关键步骤 1：安装 CUDA Toolkit (修正语法)
-      - name: ➕ 安装 CUDA Toolkit 11.2
-        uses: nvlabs/setup-cuda@v1
+      - name: ➕ 安装 CUDA Toolkit 11.2 (使用稳定Action)
+        uses: Jimver/cuda-toolkit@v0.22 # <--- 修正为 Jimver/cuda-toolkit
         with:
           cuda: '11.2'
       
