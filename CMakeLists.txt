@@ -120,7 +120,7 @@ ExternalProject_Add(
         
         # 核心修正：禁用 JPEG 的 SIMD 优化，解决 libjpeg-turbo 的 CMake 脚本错误
         -DENABLE_SSE=OFF # <--- 新增，禁用 SIMD 优化，解决 libjpeg-turbo 错误
-        
+        -DBUILD_JAVA=OFF
         # 统一运行时库
         -DCMAKE_C_FLAGS_RELEASE="/MD"
         -DCMAKE_C_FLAGS_DEBUG="/MDd"
