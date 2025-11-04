@@ -115,6 +115,11 @@ ExternalProject_Add(
 		# 禁用 Python 模块，消除 numpy 依赖报错
         -DBUILD_opencv_python_bindings=OFF
         -DBUILD_opencv_python_tests=OFF
+		# 强制禁用 NASM（保持不变，以防万一）
+        -DOPENCV_ENABLE_NASM=OFF
+        
+        # 核心修正：禁用 JPEG 的 SIMD 优化，解决 libjpeg-turbo 的 CMake 脚本错误
+        -DENABLE_SSE=OFF # <--- 新增，禁用 SIMD 优化，解决 libjpeg-turbo 错误
         
         # 统一运行时库
         -DCMAKE_C_FLAGS_RELEASE="/MD"
