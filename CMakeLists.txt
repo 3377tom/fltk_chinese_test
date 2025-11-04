@@ -49,7 +49,7 @@ ExternalProject_Add(
                -DWITH_FFMPEG=ON
         -DOPENCV_DOWNLOAD_FFMPEG=OFF
         -DOPENCV_FFMPEG_SKIP_DOWNLOAD=ON
-        -DOPENCV_FFMPEG_BINARIES_PATH="E:/opencv_ffmpeg"
+        
         -DOPENCV_DOWNLOAD_EXTERNAL=OFF
         -DCMAKE_USE_OPENSSL=ON
         -DBUILD_opencv_videoio=ON  # 摄像头模块（必需）
@@ -74,7 +74,7 @@ ExternalProject_Add(
  -DBUILD_opencv_cudawarping=OFF  # 若不需要透视变换等功能
        -D ENABLE_FAST_MATH=ON
       -D CUDA_FAST_MATH=ON
-     -DOPENCV_EXTRA_MODULES_PATH=E:/opencv_contrib/modules
+     
         -DCUDA_ARCH_BIN=ALL # 替换为你的显卡计算能力（如RTX30系为8.6）
  
    # 禁用LAPACK/BLAS依赖（核心解决参数）
