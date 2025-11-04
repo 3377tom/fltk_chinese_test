@@ -6,9 +6,8 @@
 #include <FL/fl_message.H>  // 用于FLTK弹窗提示
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
-#include <opencv2/core/cuda.hpp>
  
-#include <opencv2/cudaimgproc.hpp>  // cudaimgproc包含resize和cvtColor等功能
+ 
 #include <chrono>
 #include <string>
 #include <vector>
@@ -113,23 +112,11 @@ void update_frame(void* data) {
     cv::cuda::GpuMat gpu_frame, gpu_rgb;
     bool use_gpu = (cv::cuda::getCudaEnabledDeviceCount() > 0);
 
-    if (use_gpu) {
-        gpu_frame.upload(app.frame);  // 上传数据到GPU
-
-        // 创建 GpuMat 类型的 resized_frame
-        cv::cuda::GpuMat resized_frame;
-
-        // 使用 CUDA 核心函数来处理缩放（例如调用 cv::cuda::cvtColor 或其他）
-        // 目前 CUDA 模块提供的是一些常见的函数，比如转换颜色空间
-        cv::cuda::cvtColor(gpu_frame, resized_frame, cv::COLOR_BGR2RGB);
-
-        gpu_rgb.download(app.frame_rgb);  // 下载结果回到CPU
-    }
-    else {
+   
         // 如果没有GPU，则使用CPU处理
         cv::resize(app.frame, app.frame, cv::Size(app.optimal_width, app.optimal_height));
         cv::cvtColor(app.frame, app.frame_rgb, cv::COLOR_BGR2RGB);
-    }
+ 
     // 双缓冲复制（4.12.0连续内存优化）
     app.frame_rgb.copyTo(app.cached_frame);
 
