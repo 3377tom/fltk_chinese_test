@@ -136,7 +136,7 @@ ExternalProject_Add(
 # 配置 OpenCV 路径
 set(OPENCV_INSTALL_DIR ${CMAKE_BINARY_DIR}/External/OpenCV/Install)
 set(OPENCV_INCLUDE_DIR ${OPENCV_INSTALL_DIR}/include)
-set(OPENCV_LIB_DIR ${OPENCV_INSTALL_DIR}/x64/vc16/lib)
+set(OPENCV_LIB_DIR ${OPENCV_INSTALL_DIR}/x64/vc17/lib)
 
 # 区分 Debug/Release 库名（保持你原来的逻辑）
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
