@@ -22,7 +22,7 @@ ExternalProject_Add(
     
     EXCLUDE_FROM_ALL ON
     GIT_REPOSITORY https://github.com/fltk/fltk.git
-    GIT_TAG v1.3.8 # <-- 确保使用你需要的版本标签
+    GIT_TAG release-1.3.5 # <-- 确保使用你需要的版本标签
     GIT_SHALLOW TRUE
 
     PREFIX ${CMAKE_BINARY_DIR}/External/FLTK
@@ -40,7 +40,9 @@ ExternalProject_Add(
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DOPTION_BUILD_EXAMPLES=OFF
         -DOPTION_BUILD_TEST=OFF
-		
+		-DFLTK_BUILD_HTML_DOCS=OFF
+        -DFLTK_USE_SYSTEM_LIBPNG=OFF # 确保使用其内置的 PNG 库
+        -DFLTK_USE_SYSTEM_LIBJPEG=OFF # 确保使用其内置的 JPEG 库
         -DOPTION_USE_THREADS=ON # 启用多线程支持
         # 统一运行时库
         -DCMAKE_C_FLAGS_RELEASE="/MD"
@@ -110,6 +112,9 @@ ExternalProject_Add(
         -DCMAKE_CXX_STANDARD=17
         -DBUILD_EXAMPLES=OFF
         -DBUILD_TESTS=OFF
+		# 禁用 Python 模块，消除 numpy 依赖报错
+        -DBUILD_opencv_python_bindings=OFF
+        -DBUILD_opencv_python_tests=OFF
         
         # 统一运行时库
         -DCMAKE_C_FLAGS_RELEASE="/MD"
