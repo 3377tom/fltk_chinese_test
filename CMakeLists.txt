@@ -58,11 +58,11 @@ set(FLTK_INCLUDE_DIR ${FLTK_INSTALL_DIR}/include)
 set(FLTK_LIB_DIR ${FLTK_INSTALL_DIR}/lib)
 
 # 区分 Debug/Release 库名 <-- 移除/注释掉这部分
-set(FLTK_LIBS
-    "${FLTK_LIB_DIR}/fltk$<IF:$<CONFIG:Debug>,d,.>.lib"
-    "${FLTK_LIB_DIR}/fltk_images$<IF:$<CONFIG:Debug>,d,.>.lib"
+
+ set(FLTK_LIBS
+    "${FLTK_LIB_DIR}/fltk$<IF:$<CONFIG:Debug>,d,>.lib"
+    "${FLTK_LIB_DIR}/fltk_images$<IF:$<CONFIG:Debug>,d,>.lib"
 )
- 
 
 
 # ==================== 2. OpenCV 自动构建（调整参数）====================
@@ -138,11 +138,14 @@ set(OPENCV_INCLUDE_DIR ${OPENCV_INSTALL_DIR}/include)
 set(OPENCV_LIB_DIR_VC17 ${OPENCV_INSTALL_DIR}/x64/vc17/lib)
 
 # 区分 Debug/Release 库名（保持你原来的逻辑）
+
+# 构造 OpenCV 库名：opencv_core4120.lib 或 opencv_core4120d.lib
 set(OPENCV_LIBS
-    "${OPENCV_LIB_DIR_VC17}/opencv_core4120$<IF:$<CONFIG:Debug>,d,.>.lib"
-    "${OPENCV_LIB_DIR_VC17}/opencv_imgproc4120$<IF:$<CONFIG:Debug>,d,.>.lib"
-    "${OPENCV_LIB_DIR_VC17}/opencv_videoio4120$<IF:$<CONFIG:Debug>,d,.>.lib"
-    "${OPENCV_LIB_DIR_VC17}/opencv_imgcodecs4120$<IF:$<CONFIG:Debug>,d,.>.lib"
+    # 修正：将 Release 配置的占位符从 . 更改为空字符串
+    "${OPENCV_LIB_DIR_VC17}/opencv_core4120$<IF:$<CONFIG:Debug>,d,>.lib"
+    "${OPENCV_LIB_DIR_VC17}/opencv_imgproc4120$<IF:$<CONFIG:Debug>,d,>.lib"
+    "${OPENCV_LIB_DIR_VC17}/opencv_videoio4120$<IF:$<CONFIG:Debug>,d,>.lib"
+    "${OPENCV_LIB_DIR_VC17}/opencv_imgcodecs4120$<IF:$<CONFIG:Debug>,d,>.lib"
 )
 # ==================== 3. 主项目编译与链接 ====================
 include_directories(${FLTK_INCLUDE_DIR} ${OPENCV_INCLUDE_DIR})
