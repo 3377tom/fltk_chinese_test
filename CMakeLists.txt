@@ -47,7 +47,7 @@ ExternalProject_Add(
         -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>  # 安装目录
          
                -DWITH_FFMPEG=ON
-        -DOPENCV_DOWNLOAD_FFMPEG=OFF
+       
         -DOPENCV_FFMPEG_SKIP_DOWNLOAD=ON
         
         -DOPENCV_DOWNLOAD_EXTERNAL=OFF
