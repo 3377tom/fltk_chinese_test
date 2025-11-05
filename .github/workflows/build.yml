@@ -43,9 +43,9 @@ jobs:
         with:
           name: fltk-opencv-release
           path: |
-            build/fltk_chinese_test.exe
+            build/Release/fltk_chinese_test.exe
             # 路径根据你的配置，指向 OpenCV 安装目录下的 bin 文件夹
-            build/External/OpenCV/Install/x64/vc16/bin/*.dll
+            build/External/OpenCV/Install/x64/vc17/bin/*.dll
             
       # 可选：如果你也需要 Debug 版本
       - name: 🔨 编译项目 (Debug)
@@ -57,5 +57,5 @@ jobs:
         with:
           name: fltk-opencv-debug
           path: |
-            build/fltk_chinese_testd.exe
-            build/External/OpenCV/Install/x64/vc16/bin/*d.dll
+            build/Debug/fltk_chinese_test.exe
+            build/External/OpenCV/Install/x64/vc17/bin/*d.dll
